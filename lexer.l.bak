@@ -1,0 +1,55 @@
+  #include "global.h";
+  int lineno = 1;
+  int tokenval = NONE;
+   
+delim [ \t\n] 
+ws {delim}+ 
+letter [A-Za-z] 
+digit [0-9] 
+id {letter}({letter}|{digit})* 
+number {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
+%option nounput
+%%
+
+  int t;
+number	|
+id	{
+      t = input();
+      if (t == ' ' || t == '\t');
+      
+      else
+      if (t == '\n')
+	lineno++;
+      
+      else
+      if (isdigit (t))
+	
+	{
+	  tokenval = atoi(yytext);
+	  return NUM;
+	}
+      
+      else
+      if (isalpha (t))
+	
+	{
+	  int p;	
+	  p = lookup (yytext);
+	  if (p == 0)
+	    p = insert (yytext, ID);
+	  tokenval = p;
+	  return symtable[p].token;
+	}
+      
+      else
+      if (t == EOF)
+	return DONE;
+      
+      else
+	
+	{
+	  tokenval = NONE;
+	  return yytext[0];
+	}
+    }
+%%
